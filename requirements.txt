@@ -1,0 +1,2 @@
+# Qiskit is preinstalled on Qollab. Nothing else needed.
+# Local dev only: pip install qiskit pytest

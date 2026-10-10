@@ -1,0 +1,9 @@
+/* Placeholder — Phase 1 replaces this. Keep contrast ≥ 4.5:1 and visible focus. */
+.nssc { max-width: 920px; margin: 0 auto; padding: 1rem; font: 16px/1.5 system-ui, sans-serif; color: #111; }
+.nssc h1 { font-size: 1.8rem; margin: 0 0 .25rem; }
+.nssc__tagline { margin: 0 0 .5rem; color: #333; }
+.nssc__status { font-size: .9rem; color: #444; }
+.act { margin: 2rem 0; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+.panel { margin: 1rem 0; }
+.nssc__debug { font-size: .8rem; background: #f4f4f4; padding: .75rem; overflow: auto; }
+.nssc :focus-visible { outline: 3px solid #005fcc; outline-offset: 2px; }

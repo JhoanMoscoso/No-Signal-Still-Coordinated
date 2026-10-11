@@ -28,7 +28,8 @@ Lee esto completo antes de tocar nada. **Empieza por `reportes/`**: hay un repor
 | Fase 1 | ✅ validada en Qollab built-in y Forte 1 — `reportes/fase-1.md` |
 | Fase 2 | ✅ validada en Qollab v0.2 — `reportes/fase-2.md` |
 | Fase 3 | ✅ implementada y revisada (127/127 tests UI); ☐ prueba en Qollab v0.3 — `reportes/fase-3.md` |
-| Fases 4–5 | ☐ |
+| Fase 4 | ✅ `PROJECT_PAGE.md` = `README.md`; ☐ equipo: declaración de IA, enlaces — `reportes/fase-4.md` |
+| Fase 5 | ☐ video + envío |
 
 ## 2. Restricciones de Qollab (no negociables)
 

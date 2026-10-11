@@ -129,7 +129,7 @@ inferred_visibility.{chsh,w,ghz,mermin}
 - Punto "measured on this backend" en V = `inferred_visibility.chsh` y `.w`. Si el run fue en Built-in, el punto cae en V = 1 y se dice.
 - Texto de requisitos: memoria cuántica ≥ ventana de latencia (decenas de ms), tasa de distribución de entrelazamiento ≥ tasa de decisiones, y que la elección de líder con W necesita que los nodos *preparen* el estado entre sí (Tani et al.) para que no sea "sobres con repartidor".
 
-### Fase 4 — Documentación y cumplimiento (2 h)
+### Fase 4 — Documentación y cumplimiento (2 h) — ✅ texto listo en `PROJECT_PAGE.md` = `README.md`; ☐ equipo: declaración de IA + material previo, enlaces, pegar en Qollab. Reporte: `reportes/fase-4.md`
 - Página del proyecto en Qollab (inglés): qué hace, qué problema explora, cómo correrlo, cómo extenderlo (p. ej. n nodos, otros juegos no-locales), referencias (§7).
 - Frase exacta **"This effort is supported by Qollab & IonQ"** (ya está en `index.html`; repetir en la página).
 - Declaración de IA y de material previo (ver §4, decisión 10).
@@ -208,8 +208,8 @@ Orden en que se recorta, de último a primero:
 
 - [x] Fase 0 pasada en Built-in, IBM noise y IonQ remote (un solo job).
 - [x] Publicado en Qollab con MIT (v0.1).
-- [ ] Página: qué/por qué/cómo correr/cómo extender + referencias.
-- [ ] "This effort is supported by Qollab & IonQ" en página e `index.html`.
+- [x] Página: qué/por qué/cómo correr/cómo extender + referencias (`PROJECT_PAGE.md`; falta pegarla en Qollab).
+- [x] "This effort is supported by Qollab & IonQ" en página e `index.html`.
 - [ ] Declaración de IA y de material previo.
 - [ ] Accesibilidad: teclado, contraste, aria, no solo color.
 - [ ] Video 2–3 min público sin login.

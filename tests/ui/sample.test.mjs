@@ -51,3 +51,14 @@ test('sample: single-outcome raw always returns it', () => {
     for (let i = 0; i < 100; i++) assert.equal(sample({ '11': 1000 }), '11');
   });
 });
+
+test('sample: empty, missing or all-zero raw returns null (no data), never undefined or a throw', () => {
+  assert.equal(sample({}), null);
+  assert.equal(sample({ '00': 0, '11': 0 }), null);
+  assert.equal(sample(undefined), null);
+  assert.equal(sample(null), null);
+});
+
+test('sample: skips zero-count keys', () => {
+  for (const r of [0, 0.3, 0.999]) assert.equal(sample({ '00': 0, '01': 5 }, () => r), '01');
+});

@@ -57,9 +57,17 @@
   3. Los párrafos largos van en monoespaciada: legibles, pero densos. Evaluar fuente proporcional para el cuerpo.
 - Navegación con Tab: _no reportada aún._
 
-### IBM Fez (ruido) — _pendiente_
+### IonQ Forte 1 — ✅ (10 oct 2026)
+- `source: live (wide)`. Consola: `Circuit execution time: 4000ms`, sin errores.
+- Debug JSON:
+  ```json
+  { "source": "live (wide)", "bob_p1": [0.522, 0.503, 0.513], "chsh": 0.84625, "chsh_sigma": 0.0057,
+    "leader_exactly_one": 0.96, "split_brain": 0.027, "ghz_agreement": 0.977, "mermin_precomputed": 1,
+    "inferred_visibility": { "chsh": 0.979, "w": 0.936, "ghz": 0.969 } }
+  ```
+- Coincide con la referencia de Fase 0: W 0.96 (antes 0.968) y split-brain 0.027 idéntico, es decir, ~1 de cada 37 elecciones da dos líderes. No-leader implícito ≈ 0.013.
 
-### IonQ Forte 1 — _pendiente_
+### IBM Fez — no se corrió en Fase 1 (el modo `list` ya se validó en Fase 0). Navegación con Tab: se reporta en Fase 2.
 
 ## Archivos a subir a Qollab (v0.2)
 | Archivo | Carpeta destino en Qollab |

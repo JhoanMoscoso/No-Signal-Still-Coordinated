@@ -2,7 +2,7 @@
 
 **Hackathon:** Qollab × IonQ · Tema **Quantum Unlocked** (quantum networking)
 **Deadline duro:** domingo 11 oct 2026, 19:00 ET / 18:00 Colombia. Envía el capitán (Jhoan).
-**Estado (10 oct 2026):** Fase 0 cerrada. Motor cuántico listo (20/20 tests), modo automático validado en Qollab built-in (list), IBM Fez con ruido (list) e IonQ Forte 1 remoto (wide). Publicado en Qollab como **v0.1** (MIT); la próxima subida es **v0.2**. Fase 1 (UI: layout, Acto 1, Acto 2 estático) implementada y revisada; pendiente prueba en Qollab como v0.2. Reportes por fase para quien continúe: `reportes/`.
+**Estado (10 oct 2026):** Fase 0 cerrada. Motor cuántico listo (20/20 tests), modo automático validado en Qollab built-in (list), IBM Fez con ruido (list) e IonQ Forte 1 remoto (wide). Publicado en Qollab como **v0.1** (MIT); la próxima subida es **v0.2**. Fase 1 (UI estática) validada en Qollab built-in y Forte 1. Fase 2 (interactividad) implementada y revisada; pendiente prueba en Qollab (v0.2 = Fases 1 + 2). Reportes por fase para quien continúe: `reportes/`.
 **Corre en paralelo con *Entangled*.** Presupuesto realista para este proyecto: **~11 h de Jhoan + ~2 h de revisión de física + ~1,5 h de video**. Si no hay ese tiempo, ver §6 (plan de corte).
 
 ---
@@ -45,7 +45,10 @@ ui/
   sample.js           sample(raw), bit(key, qubit) — rondas sin más jobs (Fase 2)
   charts.js           SVG puro como string: hbar, histogram2, nodes, pct
   act1.js             Acto 1: botones de Alice, histograma de Bob, ρ_B
-  act2.js             Acto 2: paneles W → GHZ → CHSH
+  act2.js             Acto 2: paneles W → GHZ → CHSH (delegan en leader.js, consensus.js, chsh.js)
+  sendbit.js          reto "Send a bit" del Acto 1
+  games.js            lógica pura de los juegos (rng inyectable, testeable)
+  anim.js, dom.js     bucle de animación (skip/cancel/reduced-motion) y lock/estado/foco
 dev/                  harness local, NO se sube: index.html + shim de quantum.runner (python3 -m http.server → /dev/)
 local_run.py          corre todo localmente y regenera data/
 ```
@@ -108,13 +111,13 @@ inferred_visibility.{chsh,w,ghz,mermin}
 
 **Fase 0 cerrada.** El contrato queda congelado: la UI solo lee `data`. Reporte: `reportes/fase-0.md`.
 
-### Fase 1 — Layout + Acto 1 + Acto 2 estático (3 h) — ✅ implementada, ☐ prueba en Qollab (v0.2). Reporte: `reportes/fase-1.md`
+### Fase 1 — Layout + Acto 1 + Acto 2 estático (3 h) — ✅ validada en Qollab (built-in + Forte 1). Reporte: `reportes/fase-1.md`
 - `ui/charts.js`: barra horizontal con marcas (75 %, 85,4 %), histograma 0/1, tres "nodos" con luz. SVG a mano, sin librerías.
 - Acto 1: selector de acción de Alice (3 botones, `aria-pressed`), histograma de Bob desde `nosignal[choice].bob`, cajita ρ_B.
 - Acto 2: tres paneles con sus barras desde `leader`, `consensus`, `chsh`. Texto corto de cada uno (ver §5).
 - Mostrar badge "precomputed" vs "live" (`body[data-source]`).
 
-### Fase 2 — Interactividad (2 h)
+### Fase 2 — Interactividad (2 h) — ✅ implementada, ☐ prueba en Qollab. Reporte: `reportes/fase-2.md` (incluye ajustes de Jhoan: 32 bits + decodificador inverso, carrera CHSH con 16 estrategias seleccionables, tally por nodo en W)
 - Acto 1 reto "send a bit": el usuario escribe 8 bits; por cada bit Alice "hace" Z o X; Bob muestrea de `raw`; marcador de aciertos → ~50 %.
 - Acto 2c: botón "Play 100 rounds" (muestreo de `raw`), contador vivo; tabla de las 16 estrategias de sobres con su 75 % máximo, resaltando que ninguna llega a 4/4.
 - Acto 2a: botón "Elect again" que muestrea W y enciende un nodo.

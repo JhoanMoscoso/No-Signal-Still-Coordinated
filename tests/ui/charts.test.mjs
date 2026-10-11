@@ -105,3 +105,22 @@ test('nodes: escapes name, state and note', () => {
   assert.ok(!html.includes('<i>') && !html.includes('<u>'));
   assert.ok(html.includes('&lt;i&gt;') && html.includes('&quot;&amp;&quot;'));
 });
+
+test('hbar: text override replaces the value (e.g. no rounds played yet)', () => {
+  const html = hbar({ value: 0, text: '—', label: 'Envelopes' });
+  assert.ok(html.includes('<strong class="chart__value">—</strong>'));
+  assert.ok(!html.includes('0.0 %'));
+});
+
+test('hbar: marks are drawn above the error bar, which sits below the bar centre', () => {
+  const html = hbar({ value: 0.844, sigma: 0.006, label: 'x', marks: [{ at: 0.8536, label: 'T' }] });
+  assert.ok(html.indexOf('class="c-mark"') > html.indexOf('class="c-err"'), 'z-order: marks on top');
+  const y = Number(html.match(/class="c-err"><line [^>]*?y1="([\d.]+)"/)[1]);
+  assert.ok(y > 38 + 26 / 2, `error bar y=${y} must be below the centre`);
+});
+
+test('nodes: optional aria override per node', () => {
+  const html = nodes([{ name: 'A', state: '—', note: '31.4 %', aria: 'leader share 31.4 %', on: false }]);
+  assert.match(html, /aria-label="A: — leader share 31\.4 %"/);
+  assert.ok(html.includes('>31.4 %<'));
+});

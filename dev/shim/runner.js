@@ -8,7 +8,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export const run_mode = wrap(() => new URLSearchParams(location.search).get('mode') === 'wide' ? 'wide' : 'list');
 export const build_for = wrap((mode) => ({ shim: true, mode }));
 export const parse_any = wrap(async () => {
-  await sleep(1500);
+  await sleep(Number(new URLSearchParams(location.search).get('delay') ?? 1500));   // ?delay=300 lands the live render mid-batch
   const live = structuredClone(precomputed);
   live.chsh.overall = 0.858;
   live.nosignal.none.bob = { p0: 0.51, p1: 0.49, shots: 1000 };

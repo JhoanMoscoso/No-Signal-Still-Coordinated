@@ -59,12 +59,13 @@ function render(data, { live, mode = null }) {
   document.body.dataset.source = live ? 'live' : 'precomputed';
   document.getElementById('source-badge').textContent =
     live ? `live · ${mode} mode` : 'precomputed results';
-  act1.render(document.getElementById('act1-root'), data);
+  const source = live ? `live-${mode}` : 'precomputed';   // acts reset their game state when this changes
+  act1.render(document.getElementById('act1-root'), data, { source });
   act2.render({
     leader: document.getElementById('act2-leader'),
     consensus: document.getElementById('act2-consensus'),
     chsh: document.getElementById('act2-chsh'),
-  }, data);
+  }, data, { source });
   // TODO Phase 3: act3.render(document.getElementById('act3-root'), data);
   document.getElementById('debug').textContent = JSON.stringify({
     source: live ? `live (${mode})` : 'precomputed',

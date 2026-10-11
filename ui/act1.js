@@ -1,6 +1,7 @@
 // Act 1: Alice cannot signal Bob. Selected choice lives at module level so it
 // survives the second render() (precomputed -> live).
 import { histogram2, pct } from './charts.js';
+import * as sendbit from './sendbit.js';
 
 export const CHOICES = [
   { key: 'none', label: 'Alice does nothing' },
@@ -52,12 +53,20 @@ function build(root) {
     `<p class="act1__summary" data-slot="summary" aria-live="polite"></p><p class="act1__compare" data-slot="compare"></p></div>` +
     `<div class="rho"><span class="rho__label">Bob's local state, whatever Alice does</span>` +
     `<code class="rho__box" data-slot="rho"></code></div>` +
-    `<p class="latency">${LATENCY}</p></div>`;
+    `<p class="latency">${LATENCY}</p></div>` + sendbit.html();
   root.addEventListener('click', (e) => {
-    const btn = e.target.closest?.('button[data-choice]');
+    const btn = e.target.closest?.('button');
     if (!btn) return;
-    choice = btn.dataset.choice;
-    update(root);                       // in place: the focused button is never rebuilt
+    if (btn.dataset.choice) {
+      choice = btn.dataset.choice;
+      update(root);                     // in place: the focused button is never rebuilt
+    } else if (btn.dataset.act) {
+      sendbit.act(root, btn);
+    }
+  });
+  root.addEventListener('beforeinput', (e) => sendbit.onBeforeInput(e));
+  root.addEventListener('input', (e) => {
+    if (e.target.dataset?.act === 'msg') sendbit.onInput(root, e.target);
   });
 }
 
@@ -76,8 +85,11 @@ function update(root) {
   }
 }
 
-export function render(root, data) {
+// opts.source: 'precomputed' | 'live-...'. The Send-a-bit tally resets when it changes;
+// the selected Alice choice is a UI preference and persists.
+export function render(root, data, { source } = {}) {
   if (!state.has(root)) { state.set(root, data); build(root); }
   state.set(root, data);
   update(root);
+  sendbit.sync(root, data, source);
 }

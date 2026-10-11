@@ -25,8 +25,9 @@ Lee esto completo antes de tocar nada. **Empieza por `reportes/`**: hay un repor
 | `index.html` con contenedores de 3 actos, `main.css` placeholder | ✅ (feo a propósito) |
 | `data/precomputed.{json,js}` | ✅ regenerable con `python local_run.py` |
 | Fase 0 pasos 4–7 (built-in list, IBM Fez list < 1 min, Forte wide, publicado MIT) | ✅ publicado en Qollab como **v0.1**; siguiente subida **v0.2** |
-| Fase 1 | ✅ implementada y revisada (24/24 tests UI); ☐ prueba en Qollab v0.2 — ver `reportes/fase-1.md` |
-| Fases 2–5 | ☐ |
+| Fase 1 | ✅ validada en Qollab built-in y Forte 1 — `reportes/fase-1.md` |
+| Fase 2 | ✅ implementada y revisada (89/89 tests UI); ☐ prueba en Qollab v0.2 — `reportes/fase-2.md` |
+| Fases 3–5 | ☐ |
 
 ## 2. Restricciones de Qollab (no negociables)
 

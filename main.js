@@ -7,6 +7,7 @@ import * as runner from 'quantum.runner';          // quantum/runner.py
 import precomputed from './data/precomputed.js';    // fallback + instant first paint
 import * as act1 from './ui/act1.js';
 import * as act2 from './ui/act2.js';
+import * as act3 from './ui/act3.js';
 
 const SHOTS = 1000;   // one shot of the wide circuit = one shot of EVERY experiment
 
@@ -66,7 +67,7 @@ function render(data, { live, mode = null }) {
     consensus: document.getElementById('act2-consensus'),
     chsh: document.getElementById('act2-chsh'),
   }, data, { source });
-  // TODO Phase 3: act3.render(document.getElementById('act3-root'), data);
+  act3.render(document.getElementById('act3-root'), data, { source });
   document.getElementById('debug').textContent = JSON.stringify({
     source: live ? `live (${mode})` : 'precomputed',
     bob_p1: ['none', 'Z', 'X'].map((c) => data.nosignal[c].bob.p1),

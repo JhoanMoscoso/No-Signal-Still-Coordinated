@@ -26,8 +26,9 @@ Lee esto completo antes de tocar nada. **Empieza por `reportes/`**: hay un repor
 | `data/precomputed.{json,js}` | ✅ regenerable con `python local_run.py` |
 | Fase 0 pasos 4–7 (built-in list, IBM Fez list < 1 min, Forte wide, publicado MIT) | ✅ publicado en Qollab como **v0.1**; siguiente subida **v0.2** |
 | Fase 1 | ✅ validada en Qollab built-in y Forte 1 — `reportes/fase-1.md` |
-| Fase 2 | ✅ implementada y revisada (89/89 tests UI); ☐ prueba en Qollab v0.2 — `reportes/fase-2.md` |
-| Fases 3–5 | ☐ |
+| Fase 2 | ✅ validada en Qollab v0.2 — `reportes/fase-2.md` |
+| Fase 3 | ✅ implementada y revisada (127/127 tests UI); ☐ prueba en Qollab v0.3 — `reportes/fase-3.md` |
+| Fases 4–5 | ☐ |
 
 ## 2. Restricciones de Qollab (no negociables)
 
@@ -151,7 +152,7 @@ P2 → Fase 3 slider (dejar párrafo con las fórmulas) → Acto 2b GHZ (dejar u
 - **Act 2a (W).** "Three identical replicas share |W⟩ = (|100⟩+|010⟩+|001⟩)/√3 and each measures its own qubit. Exactly one reads 1: it is the leader. Fair (1/3 each), one step, no IDs, no messages. Honest caveat: with a *pre-prepared* W state you could get the same from shuffled envelopes and a dealer. The quantum result (Tani–Kobayashi–Matsumoto 2012; D'Hondt–Panangaden 2006) is that anonymous nodes can prepare this symmetry-breaking state among themselves, with no dealer — which no classical algorithm can do exactly."
 - **Act 2b (GHZ).** "|GHZ⟩ = (|000⟩+|111⟩)/√2: all three read the same random bit. Nobody chose it, so nothing was communicated. Everybody agrees on it, so consensus on a shared coin is free."
 - **Act 2c (CHSH).** "Two load balancers each get a local input (burst / no burst) and must answer now: backend 0 or 1. Rule: pick the same backend — unless both see a burst, then split. Any pre-agreed table (all 16 of them, or any random mixture) wins at most 75 %. Sharing |Φ+⟩ and measuring at 0°/45° (Alice) and ±22.5° (Bob) wins cos²(π/8) ≈ 85.4 %, the Tsirelson bound. No table can produce these statistics. That is Bell's theorem, and it is the only part of this page that no envelope can imitate."
-- **Act 3.** "Real hardware is noisy. With visibility V, P_win = ½ + V·√2/4: the quantum strategy stops beating 75 % at V = 1/√2 ≈ 0.707. For leader election P(exactly one leader) = V + 3(1−V)/8; the failures are split-brain (two leaders) and no leader. On IonQ's Forte noise model we measured 96.8 % — one election in 37 produces two leaders. Engineering requirements: entanglement must survive in memory for at least the decision window (tens of ms), and entanglement distribution rate must match decision rate. None of this exists at scale today."
+- **Act 3.** "Real hardware is noisy. With visibility V, P_win = ½ + V·√2/4: the quantum strategy stops beating 75 % at V = 1/√2 ≈ 0.707. For leader election P(exactly one leader) = V + 3(1−V)/8; the failures are split-brain (two leaders) and no leader. Across three runs on IonQ's Forte 1 noise model we measured 96.0–97.0 % — roughly one election in 30 to 40 produces two leaders. Engineering requirements: entanglement must survive in memory for at least the decision window (tens of ms), and entanglement distribution rate must match decision rate. None of this exists at scale today."
 - **Footer.** "This effort is supported by Qollab & IonQ."
 
 ## 7. Lo que la página NUNCA afirma

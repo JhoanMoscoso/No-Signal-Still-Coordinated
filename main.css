@@ -156,6 +156,37 @@ body[data-source="live"] .nssc__badge::before { content: "\25CF\00a0"; }  /* sol
 .strategies__table input[type="radio"] { width: 1.1rem; height: 1.1rem; accent-color: var(--ink); }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); border: 0; white-space: nowrap; }
 
+/* Act 3 */
+.slider { display: flex; flex-direction: column; gap: .35rem; max-width: 34rem; margin: .5rem 0; }
+.slider label { font-weight: 600; }
+.slider__row { display: flex; align-items: center; gap: 1rem; }
+.slider input[type="range"] { flex: 1; min-width: 0; height: 2rem; accent-color: var(--ink); cursor: pointer; }
+.slider__out { min-width: 3.5rem; padding: .15rem .5rem; border: 2px solid var(--ink); border-radius: 6px; background: var(--panel); font-size: 1.1rem; font-weight: 700; text-align: center; }
+.readout { margin: .25rem 0 1rem; padding: .6rem .8rem; background: var(--panel); border-left: 4px solid var(--ink); font-weight: 600; max-width: 56rem; }
+.charts { display: flex; flex-direction: column; gap: 1rem; }   /* one column: the plots need the width to stay legible */
+.charts .chart { max-width: 620px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .5rem .75rem .25rem; }
+.charts .chart__label { font-weight: 600; color: var(--ink); }
+#act3-root .legend { margin: .5rem 0 0; font-size: .875rem; max-width: 56rem; }
+.needs { margin: 0 0 .5rem; padding-left: 1.25rem; max-width: 44rem; }
+.needs li { margin: .25rem 0; }
+#act3-root h3 { margin: 1.25rem 0 .5rem; font-family: var(--serif); font-size: 1.15rem; font-weight: 700; }
+
+/* curve plot (SVG classes from ui/charts.js) */
+.c-frame { fill: var(--panel); stroke: var(--edge); stroke-width: 1.5; }
+.c-grid { stroke: var(--track); stroke-width: 1; }
+.c-tick { stroke: var(--edge); stroke-width: 1.5; }
+.c-ref { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.c-ref-label { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.c-series, .c-series-sample { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.c-end-label { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.c-slider-marker { stroke: var(--accent-deep); stroke-width: 3.5; }
+.c-marker-label { fill: var(--accent-deep); font-size: 13px; font-weight: 700; }
+.pt-leader { stroke: var(--ink); stroke-width: 1; }
+.pt-circle { fill: none; stroke: var(--ink); stroke-width: 3; }
+.pt-dot { fill: var(--ink); }
+.pt-diamond { fill: var(--panel); stroke: var(--ink); stroke-width: 2; }
+.pt-label { fill: var(--ink); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--panel); stroke-width: 3px; stroke-linejoin: round; }
+
 /* Debug + footer */
 .nssc__debugwrap { margin: 2rem 0 0; }
 .nssc__debugwrap summary { cursor: pointer; color: var(--muted); font-size: .875rem; }
@@ -166,6 +197,12 @@ body[data-source="live"] .nssc__badge::before { content: "\25CF\00a0"; }  /* sol
 .nssc :focus-visible { outline: 3px solid var(--accent-deep); outline-offset: 3px; }
 .choice[aria-pressed="true"]:focus-visible { outline-color: var(--accent-deep); box-shadow: 0 0 0 2px #fff; }
 
+@media (max-width: 520px) {   /* phones: bigger SVG text, since the 530-unit plots are scaled to ~0.64 */
+  .curve .c-axis { font-size: 17px; }
+  .curve .c-ref-label { font-size: 16px; }
+  .curve .c-end-label, .curve .pt-label { font-size: 15px; }
+  .curve .c-marker-label { font-size: 15px; }
+}
 @media (max-width: 820px) {
   .act { padding-left: .75rem; border-left-width: 4px; }
   .panel__body, .act1 { grid-template-columns: minmax(0, 1fr); }

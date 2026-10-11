@@ -87,7 +87,49 @@ Módulos nuevos en `ui/`:
 ## Riesgos / pendientes
 - A 375 px el texto de ejes y notas de los SVG queda en ~7 px. Los jueces usan escritorio; se arregla si sobra tiempo.
 - Los tests de DOM usan stubs. El comportamiento real solo se ejerció en Chrome local, no en Qollab/Pyodide.
-- **Resultado en Qollab:** _pendiente._
+- **Resultado en Qollab:** ver sección siguiente.
+
+## Prueba en Qollab (v0.2 = Fases 1 + 2), 10 oct 2026
+
+### Built-in simulator — ✅
+- Badge `live · list mode`. Consola de Qollab: `Loading... / Loading project files... / Running... / Done.`, sin errores.
+- Debug JSON:
+  ```json
+  { "source": "live (list)", "bob_p1": [0.464, 0.517, 0.486], "chsh": 0.85775, "chsh_sigma": 0.0055,
+    "leader_exactly_one": 1, "split_brain": 0, "ghz_agreement": 1, "mermin_precomputed": 1,
+    "inferred_visibility": { "chsh": 1, "w": 1, "ghz": 1 } }
+  ```
+- Capturas:
+  - **Send a bit:** 384 bits enviados, 183 aciertos (**47.7 %**, dentro de ~1σ de 50 %). Mensaje de 32 bits: "Bob's guesses: 15/32 — a coin would do the same." Las filas Alice sent / Bob read / Bob guessed / Right? se ven bien.
+  - **W y GHZ** en estado inicial (contadores en 0, leyenda "leader share") se ven bien.
+- Nota: `inferred_visibility.chsh = 1` porque el CHSH medido (0.858) supera el teórico 0.854 por ruido estadístico y el valor se recorta a 1.
+
+### IonQ Forte 1 — ⚠️ funciona, con una incoherencia por aclarar
+- Badge `live · wide mode`. Consola de Qollab: `Circuit execution time: 5000ms`, `Done.`
+- Panel W (captura) con datos **live** de hardware ruidoso:
+  - 97.0 % exactamente un líder, split-brain 2.5 %, no-leader 0.5 %.
+  - Leader share 34.7 / 33.5 / 35.1 %.
+  - "Elect 100 times" ×2: 188 de 200 elecciones con exactamente un líder (94 %). Tally A 55 · B 82 · C 81. Desbalance algo grande (χ² ≈ 6.4, df 2, p ≈ 0.04); plausible por azar, pero conviene un test de frecuencias por nodo con semilla.
+- **Incoherencia:** el debug JSON pegado dice `"source": "precomputed"`, con valores de precomputed (`leader_exactly_one: 1`, `inferred_visibility` con clave `mermin`), mientras el badge dice live y el panel W muestra datos live. `render()` en `main.js` actualiza el badge, luego `act1`, luego `act2` (leader → consensus → chsh), y **por último** el debug. Hay dos hipótesis:
+  1. El JSON se copió antes de que llegara el resultado live (el job tarda ~5 s).
+  2. **Bug:** algo en `act2.render` (panel consensus o chsh) lanza una excepción con datos live ruidosos del modo wide. El `catch` de `main.js` la atrapa: el W ya se pintó, pero el debug no se actualiza, y la línea de status diría `Run failed (…)`.
+  - Para distinguirlas hace falta, de Forte: el texto exacto de la línea de status bajo el título y la consola de DevTools del navegador (F12). La consola de Qollab no muestra `console.error`. También capturas de los paneles GHZ y CHSH tras el run.
+- **Hallazgo lateral:** el `data/precomputed.js` que está en Qollab **no es el del repo**. Qollab tiene CHSH 0.849 y `mermin` dentro de `inferred_visibility`; el repo tiene CHSH 0.844 y no tiene esa clave. Los dos son válidos (BasicSimulator), pero conviene subir el del repo para que coincidan.
+
+### Defecto encontrado: el cuerpo de texto sale monoespaciado en la máquina de Jhoan
+- Causa verificada: `--sans` empieza por `system-ui`, y en el escritorio Xfce de Jhoan la fuente de interfaz es **Fira Code** (`xfconf-query -c xsettings -p /Gtk/FontName` → `Fira Code Medium 10`). En otras máquinas sale proporcional, pero un juez con Linux personalizado vería lo mismo.
+- Arreglo: quitar `system-ui` y `-apple-system` de `--sans` y del `font` de `.nssc`, y usar una pila explícita: `"Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "DejaVu Sans", Arial, sans-serif`.
+
+### No reportado aún
+- La carrera CHSH (Play 100/1000, cambio de estrategia) en Qollab.
+- El orden de Tab en Qollab.
+- La prueba de estrés (Play 1000 antes de que llegue lo live en Forte).
+
+### Acciones antes de la Fase 3
+1. Corregir `--sans` (`main.css`).
+2. Aclarar la incoherencia de Forte: si es un bug, reproducirlo localmente con datos ruidosos de forma wide y blindar `render()` para que un fallo en un panel no impida pintar los demás ni el debug (try/catch por panel con mensaje visible).
+3. Añadir un test de frecuencias por nodo de `electRound` con semilla.
+4. Subir `data/precomputed.js` del repo a Qollab.
 
 ## Archivos a subir a Qollab (v0.2 = Fases 1 + 2)
 Relativo a la versión publicada v0.1:

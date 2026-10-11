@@ -2,7 +2,7 @@
 
 **Hackathon:** Qollab × IonQ · Tema **Quantum Unlocked** (quantum networking)
 **Deadline duro:** domingo 11 oct 2026, 19:00 ET / 18:00 Colombia. Envía el capitán (Jhoan).
-**Estado:** motor cuántico listo y probado (15/15 tests). Falta UI, página, video.
+**Estado (10 oct 2026):** Fase 0 cerrada. Motor cuántico listo (20/20 tests), modo automático validado en Qollab built-in (list), IBM Fez con ruido (list) e IonQ Forte 1 remoto (wide). Publicado en Qollab como **v0.1** (MIT); la próxima subida es **v0.2**. En curso: Fase 1 (UI). Reportes por fase para quien continúe: `reportes/`.
 **Corre en paralelo con *Entangled*.** Presupuesto realista para este proyecto: **~11 h de Jhoan + ~2 h de revisión de física + ~1,5 h de video**. Si no hay ese tiempo, ver §6 (plan de corte).
 
 ---
@@ -25,7 +25,7 @@ Orden pedagógico del Acto 2: **W → GHZ → CHSH**. Los dos primeros dan intui
 
 ```
 index.html            fragmento sin <html>/<body>; contenedores de los 3 actos; sin estilos inline
-main.js               UN backend.run con 13 circuitos; pinta precomputed al instante, luego live
+main.js               UN backend.run con UN circuito de 20 qubits; pinta precomputed al instante, luego live
 main.css              único CSS; contraste ≥ 4.5:1, :focus-visible, aria
 quantum/
   circuits.py         bell_pair, ghz3, w3 (exacto), measure_at_angle, bit()
@@ -35,22 +35,30 @@ quantum/
   consensus.py        GHZ; agreement
   mermin.py           opcional; juego Mermin-GHZ (100 % vs 75 %); 4 circuitos
   noise.py            curvas analíticas P(V); infer_visibility; umbral 1/√2
-  runner.py           CIRCUIT_ORDER, build_all(), parse_counts(), run_all()
+  runner.py           build_wide() + parse_wide_counts() (el job real); build_all() (lista, solo local); mermin_wide()
 data/
   precomputed.json    resultado real de BasicSimulator (fallback)
   precomputed.js      mismo contenido como módulo ES (import sin fetch)
-tests/test_quantum.py 15 tests con BasicSimulator (pure Python = lo más cercano a Pyodide)
+tests/test_quantum.py 18 tests con Aer (fallback BasicSimulator, lento a 20 qubits)
 local_run.py          corre todo localmente y regenera data/
 ```
 
 ### Contrato JS ↔ Python (lo único que la UI necesita saber)
 
+**Un job, formato según backend (modo automático, v0.3).**
+- IonQ (remoto o QPU) acepta un job por run **y rechaza jobs multi-circuito** (`Only job type ionq.circuit.v1 is supported`). → modo **`wide`**: los 9 experimentos lado a lado en **un circuito de 20 qubits** (bloques disjuntos: nosignal 3×2, CHSH 4×2, W 3, GHZ 3). Cada shot es un shot de todos los experimentos. Forte 1: 4 s.
+- Simuladores locales (built-in, IBM noise, Braket) aceptan varios circuitos por llamada, pero **un circuito de 20 qubits congela el navegador** (WASM, un hilo). → modo **`list`**: 9 circuitos pequeños en una sola llamada `backend.run`.
+- `run_mode(backend)` decide: `'wide'` si la clase del backend viene de `qiskit_ionq`, si no `'list'`.
+
 ```js
-const circuits = await runner.build_all.callPromising();          // 13 circuitos
-const job      = await backend.run(circuits, { shots: SHOTS });  // ÚNICO job
-const counts   = (await job.result()).get_counts();              // proxy Python
-const data     = (await runner.parse_counts.callPromising(counts)).toJs({ dict_converter: Object.fromEntries });
+const mode    = await runner.run_mode.callPromising(backend);      // 'wide' | 'list'
+const payload = await runner.build_for.callPromising(mode);        // circuito o lista
+const job     = await backend.run(payload, { shots: SHOTS });      // ÚNICO job
+const counts  = (await job.result()).get_counts();                 // dict o lista (proxy)
+const data    = (await runner.parse_any.callPromising(mode, counts)).toJs({ dict_converter: Object.fromEntries });
 ```
+
+Mermin-GHZ (12 qubits más) **no** entra en el circuito ancho (32 > 29). Queda como segundo job opcional solo en simuladores locales (`runner.mermin_wide()` + `parse_mermin_wide()`), con botón en P2. En IonQ se muestra el valor precomputado.
 
 `data` tiene esta forma (igual en `data/precomputed.json`):
 
@@ -64,9 +72,12 @@ noise.{v[101],chsh_win[],w_exactly_one[],w_split_brain[],w_no_leader[],ghz_agree
 inferred_visibility.{chsh,w,ghz,mermin}
 ```
 
-### Verificado localmente (2000 shots/circuito, BasicSimulator)
+### Verificado
 
-CHSH 0,850 ± 0,004 (teoría 0,8536) · clásico 0,75 · W exactamente-uno 1,000, por nodo 0,33/0,34/0,34 · GHZ 1,000 · Mermin 1,000 · Bob 0,50/0,49/0,50 · ρ_B = [[0.5,0],[0,0.5]].
+- **Qollab built-in 24q (v0.1, modo lista):** CHSH 0,858 · W 1,0 · GHZ 1,0 · Mermin 1,0 · Bob 0,51/0,51/0,47. Instantáneo.
+- **IonQ Forte 1 remoto (v0.2, modo wide, 1000 shots, 4 s):** CHSH 0,854 ± 0,006 · **W exactamente-uno 0,968, split-brain 0,027** · GHZ 0,984 · Bob 0,53/0,50/0,52 · visibilidad inferida W 0,95, GHZ 0,98. *Con el modelo de ruido real de IonQ, 1 de cada 37 elecciones de líder produce dos líderes.* → frase para el Acto 3.
+- **Local (Aer):** 20/20 tests, incluido que ningún gate cruza bloques y que `run_mode` detecta IonQ.
+- **Built-in con circuito ancho (v0.2):** congeló el navegador → motivo del modo automático.
 
 ### Cómo la UI "juega rondas" sin más jobs
 
@@ -76,15 +87,19 @@ CHSH 0,850 ± 0,004 (teoría 0,8536) · clásico 0,75 · W exactamente-uno 1,000
 
 ## 3. Fases
 
-### Fase 0 — Validar el contrato en Qollab (30–45 min) · **hoy, antes de cualquier UI**
-1. Crear proyecto JS en Qollab. Subir `index.html`, `main.js`, `main.css`, `quantum/`, `data/`, `LICENSE`, `requirements.txt`.
-2. Run en **Built-in simulator** → el `<pre id="debug">` debe mostrar los números de arriba.
-3. Run en **IBM noise model** (cualquiera) → números degradados; `inferred_visibility` < 1.
-4. Run en **IonQ Forte 1 (remote simulator)** → confirma que el job único con 13 circuitos pasa y que `get_counts()` devuelve lista.
-5. Publicar v0.1 (MIT). Con esto ya existe un envío válido aunque feo.
+### Fase 0 — Validar el contrato en Qollab
 
-**Riesgos que esta fase descarta:** `backend.run` aceptando lista desde JS; `get_counts()` con índice; import de `./data/precomputed.js`; transpilación de `cry` en IonQ.
-**Si algo falla:** ruta B = `run_all(backend, shots)` en Python vía `callPromising` (ya escrita).
+1. ✅ Proyecto JS creado; built-in OK en modo lista (v0.1).
+2. ✅ Forte 1 remoto rechazó la lista → circuito ancho (v0.2) → Forte OK, 4 s. `cry` transpiló sin problema.
+3. ✅ Built-in se congeló con el circuito ancho → modo automático `run_mode` (v0.3).
+4. ✅ Built-in con el modo automático: `"source": "live (list)"`, instantáneo.
+5. ✅ IBM Fez con ruido: `live (list)`, números degradados, `inferred_visibility` < 1. Menos de un minuto con 1000 shots → `SHOTS` se queda en 1000.
+6. ✅ Forte 1 otra vez: `live (wide)`.
+7. ✅ **Publicado en Qollab como v0.1 con licencia MIT.** Ya existe un envío válido aunque feo.
+
+> **Versionado Qollab:** las etiquetas v0.1/v0.2/v0.3 de arriba eran internas del desarrollo. En Qollab la versión publicada es **v0.1** (contiene el modo automático). La siguiente publicación será **v0.2** (Fase 1).
+
+**Fase 0 cerrada.** El contrato queda congelado: la UI solo lee `data`. Reporte: `reportes/fase-0.md`.
 
 ### Fase 1 — Layout + Acto 1 + Acto 2 estático (3 h)
 - `ui/charts.js`: barra horizontal con marcas (75 %, 85,4 %), histograma 0/1, tres "nodos" con luz. SVG a mano, sin librerías.
@@ -124,10 +139,11 @@ CHSH 0,850 ± 0,004 (teoría 0,8536) · clásico 0,75 · W exactamente-uno 1,000
 
 | # | Decisión | Opciones | Recomendación |
 |---|---|---|---|
-| 1 | **Dónde ocurre el run** | A) En JS: `await backend.run(...)`, `await job.result()`, pasar counts a Python. B) En Python: `run_all(backend)` vía `callPromising`. | **A.** Es exactamente el patrón documentado por Qollab, y el polling asíncrono del job en IonQ está resuelto por el runtime del lado JS. B queda como respaldo (ya escrita). Se confirma en Fase 0. |
-| 2 | **Shots por circuito** | 500 / 1000 / 2000 | **1000.** Local es instantáneo con cualquiera; el remoto de IonQ simula shot a shot y 13 circuitos × 2000 puede tardar. Con 1000, σ(CHSH) ≈ 0,56 %, de sobra para separar 75 de 85. |
+| 1 | **Dónde ocurre el run** | A) En JS: `await backend.run(...)`, `await job.result()`, pasar counts a Python. B) En Python: `run_all(backend)` vía `callPromising`. | **A, confirmado en Fase 0** (built-in). B queda como respaldo. |
+| 1b | **Formato del job** | Lista / circuito ancho / automático | **Automático (zanjado en v0.3):** `wide` en IonQ (la lista falla con `Only job type ionq.circuit.v1 is supported`), `list` en locales (el ancho congela el navegador). |
+| 2 | **Shots** | 500 / 1000 / 2000 | **1000.** Cada shot cubre los 9 experimentos. En los simuladores IBM con ruido el costo es por shot y a 20 qubits en el navegador puede tardar 1–3 min; si molesta, bajar a 500 (σ(CHSH) sube a 0,8 %, aún sobra). |
 | 3 | **Entorno local** | A) Python con BasicSimulator + pytest; JS contra `data/precomputed.js` con un `dev.html` mínimo que define un `backend` falso. B) Replicar Pyodide localmente. | **A.** B no aporta nada que la Fase 0 no valide en 10 minutos. Para el `dev.html` local: un shim `backend = { run: async () => ({ result: async () => ({ get_counts: () => countsFromJson }) }) }` y `quantum.runner` se reemplaza por un módulo que devuelve `precomputed`. |
-| 4 | **Incluir Mermin en el job** | Sí (4 circuitos extra, gratis) / No | **Sí.** Cuesta cero, da un titular "100 % vs 75 %" aunque el panel no se haga. `INCLUDE_MERMIN=True` ya está. |
+| 4 | **Mermin en el job** | En el circuito ancho / segundo job local / solo precomputado | **Segundo job solo en simuladores locales** (botón "Run Mermin — local simulators only"), precomputado en IonQ. 32 qubits no caben en los simuladores de IonQ. `INCLUDE_MERMIN=False`. |
 | 5 | **Orden del Acto 2** | W→GHZ→CHSH / CHSH primero | **W→GHZ→CHSH.** Intuición primero, prueba al final, y permite el guiño honesto de los sobres. |
 | 6 | **Gráficas** | SVG a mano / D3 desde jsdelivr / Canvas | **SVG a mano.** Son barras y una curva; D3 es dependencia externa y tiempo. Canvas no es accesible por defecto. |
 | 7 | **Idioma** | Inglés todo / mixto | **Inglés** en UI, página, README, video. Español solo en este plan. |
@@ -178,8 +194,8 @@ Orden en que se recorta, de último a primero:
 
 ## 8. Checklist de envío
 
-- [ ] Fase 0 pasada en Built-in, IBM noise y IonQ remote (un solo job).
-- [ ] Publicado en Qollab con MIT.
+- [x] Fase 0 pasada en Built-in, IBM noise y IonQ remote (un solo job).
+- [x] Publicado en Qollab con MIT (v0.1).
 - [ ] Página: qué/por qué/cómo correr/cómo extender + referencias.
 - [ ] "This effort is supported by Qollab & IonQ" en página e `index.html`.
 - [ ] Declaración de IA y de material previo.

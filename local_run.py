@@ -7,14 +7,21 @@ import json
 import sys
 from pathlib import Path
 
-from qiskit.providers.basic_provider import BasicSimulator
-
 from quantum import runner
 
-shots = int(sys.argv[1]) if len(sys.argv) > 1 else 2000
-data = runner.run_all(BasicSimulator(), shots=shots)
+try:
+    from qiskit_aer import AerSimulator as _Sim
+except ImportError:  # slow but correct
+    from qiskit.providers.basic_provider import BasicSimulator as _Sim
 
-print(f"circuits in the single job: {len(runner.CIRCUIT_ORDER)}")
+shots = int(sys.argv[1]) if len(sys.argv) > 1 else 1000
+sim = _Sim()
+data = runner.run_all(sim, shots=shots, wide=True)
+data["mermin"] = runner.parse_mermin_wide(
+    sim.run(runner.mermin_wide(), shots=shots).result().get_counts())
+
+print(f"experiments in the single wide circuit: {len(runner.CIRCUIT_ORDER)} "
+      f"({runner.wide_width()} qubits)")
 print(f"Bob marginal (Alice none/Z/X): "
       + ", ".join(f"{data['nosignal'][c]['bob']['p1']:.3f}" for c in ("none", "Z", "X")))
 print(f"rho_B = {data['nosignal']['rho_bob']}")

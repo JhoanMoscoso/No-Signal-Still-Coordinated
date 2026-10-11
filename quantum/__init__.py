@@ -9,4 +9,7 @@ Public entry points (see runner.py):
     parse_counts(counts)   -> dict with every metric the UI needs
     run_all(backend, shots)-> same dict (Python-only path)
 """
-from .runner import build_all, parse_counts, run_all, CIRCUIT_ORDER  # noqa: F401
+from .runner import (  # noqa: F401
+    CIRCUIT_ORDER, build_all, build_wide, parse_counts, parse_wide_counts,
+    run_all, mermin_wide, parse_mermin_wide, is_ionq, run_mode, build_for, parse_any,
+)

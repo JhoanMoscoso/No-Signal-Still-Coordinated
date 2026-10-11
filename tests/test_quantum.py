@@ -1,19 +1,25 @@
 """Run with:  python -m pytest tests -q   (from the project root)
 
-Uses Qiskit's pure-Python BasicSimulator: the closest thing to what Qollab's
-built-in simulator does in Pyodide. No Aer required.
+Local dev: pip install qiskit qiskit-aer pytest
+Uses AerSimulator (fast at 20 qubits). Falls back to the pure-Python
+BasicSimulator, which is correct but takes ~1 min per wide-circuit run.
 """
 from math import cos, pi, sqrt
 
 import pytest
-from qiskit.providers.basic_provider import BasicSimulator
 from qiskit.quantum_info import Statevector
 
 from quantum import chsh, consensus, leader, mermin, noise, nosignal, runner
 from quantum.circuits import bell_pair, ghz3, w3
 
+try:
+    from qiskit_aer import AerSimulator
+    backend = AerSimulator(seed_simulator=7)
+except ImportError:  # pragma: no cover
+    from qiskit.providers.basic_provider import BasicSimulator
+    backend = BasicSimulator()
+
 SHOTS = 4000
-backend = BasicSimulator()
 
 
 def _counts(qc, shots=SHOTS):
@@ -117,9 +123,34 @@ def test_noise_curves_endpoints():
 
 # ---------------------------------------------------------- single job ----
 
-def test_single_job_end_to_end():
-    data = runner.run_all(backend, shots=1000)
+def test_list_job_end_to_end():
+    data = runner.run_all(backend, shots=1000, wide=False)
     assert set(data) >= {"nosignal", "chsh", "leader", "consensus", "noise"}
     assert data["leader"]["exactly_one"] == 1.0
     assert data["chsh"]["overall"] > 0.8
     assert data["inferred_visibility"]["w"] == 1.0
+
+
+def test_wide_circuit_shape():
+    wide = runner.build_wide()
+    assert wide.num_qubits == 20 and wide.num_clbits == 20
+    assert wide.num_qubits <= 24  # built-in simulator limit (IonQ Aria 25, Forte 29)
+
+
+def test_wide_split_matches_blocks():
+    """Splitting the wide key recovers each block's own distribution."""
+    data = runner.run_all(backend, shots=2000, wide=True)
+    assert data["leader"]["exactly_one"] == 1.0
+    assert data["consensus"]["agreement"] == 1.0
+    assert abs(data["chsh"]["overall"] - chsh.TSIRELSON_BOUND) < 0.02
+    for c in nosignal.ALICE_CHOICES:
+        assert abs(data["nosignal"][c]["bob"]["p1"] - 0.5) < 0.03
+    assert data["nosignal"]["Z"]["p_same_after_compare"] > 0.99
+    # every block saw every shot
+    assert data["leader"]["shots"] == 2000 and data["chsh"]["shots"] == 4 * 2000
+
+
+def test_mermin_wide():
+    counts = backend.run(runner.mermin_wide(), shots=500, seed_simulator=3).result().get_counts()
+    res = runner.parse_mermin_wide(counts)
+    assert res["overall"] == 1.0 and res["inferred_visibility"] == 1.0

@@ -34,7 +34,32 @@
 - **Imports relativos anidados** (`ui/act1.js` → `./charts.js`): no probados en Qollab. Si fallan, el fallback es que `main.js` importe `./ui/charts.js` y pase los helpers por parámetro, o fusionar archivos.
 - A 375 px el texto de los SVG queda pequeño (~7 px en los nodos), porque las gráficas escalan con su viewBox. Los jueces usan escritorio; revisar si sobra tiempo.
 - El test de DOM es un stub, no un parser: no valida la estructura HTML real.
-- **Resultado en Qollab:** _pendiente — completar cuando Jhoan pruebe v0.2 en built-in y Forte 1._
+- **Resultado en Qollab:** ver sección siguiente.
+
+## Prueba en Qollab (v0.2)
+
+### Built-in simulator — ✅ (10 oct 2026)
+- Badge final `live · list mode`. Status: `Live results from basic_simulator (list mode).`
+- Consola: solo `Loading... / Loading project files... / Running... / Done.`, **sin errores**. Los **imports relativos anidados** (`ui/act1.js` → `./charts.js`) **funcionan en Qollab**: riesgo cerrado.
+- Debug JSON:
+  ```json
+  { "source": "live (list)", "bob_p1": [0.493, 0.518, 0.511], "chsh": 0.849, "chsh_sigma": 0.00566,
+    "leader_exactly_one": 1, "split_brain": 0, "ghz_agreement": 1, "mermin_precomputed": 1,
+    "inferred_visibility": { "chsh": 0.987, "w": 1, "ghz": 1 } }
+  ```
+- Visual (capturas de Jhoan):
+  - Acto 1: los tres botones cambian el histograma de Bob (50.7/49.3, 48.2/51.8, 48.9/51.1). Con Z aparece "100.0 % of shots match" tras comparar. ρ_B correcta.
+  - Acto 2: los paneles W (31.4/32.8/35.8 %, 100 % exactamente uno), GHZ (52.1/47.9, 100 % de acuerdo) y CHSH (84.9 % ± 0.6, por par 86.9/84.6/84.1/84.0) se ven bien.
+  - Acto 3: el párrafo se ve.
+- Defectos visuales menores, a corregir en la subida de Fase 2:
+  1. W: las etiquetas "leader in 31.4 %" de nodos vecinos casi se tocan ("% leader").
+  2. CHSH: la barra de error de 85 % se dibuja encima de las marcas 75/85.4 y se ve como una "H" pegada a la marca de Tsirelson.
+  3. Los párrafos largos van en monoespaciada: legibles, pero densos. Evaluar fuente proporcional para el cuerpo.
+- Navegación con Tab: _no reportada aún._
+
+### IBM Fez (ruido) — _pendiente_
+
+### IonQ Forte 1 — _pendiente_
 
 ## Archivos a subir a Qollab (v0.2)
 | Archivo | Carpeta destino en Qollab |

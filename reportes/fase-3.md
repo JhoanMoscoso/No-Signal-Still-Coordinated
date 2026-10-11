@@ -1,6 +1,6 @@
 # Reporte — Fase 3: Acto 3 (reality check con ruido)
 
-**Estado:** ✅ implementada y revisada (11 oct 2026). ☐ Falta la prueba en Qollab (subida **v0.3**).
+**Estado:** ✅ implementada, revisada y validada en Qollab v0.3 (built-in + Forte 1), 11 oct 2026.
 
 ## Qué se hizo
 - **Problema que resuelve:** en el built-in, donde corren los jueces, `inferred_visibility` vale 1.0, así que un único punto "medido" queda pegado al borde y el reality check no se ve. Por eso cada gráfica lleva dos tipos de punto:
@@ -69,7 +69,22 @@
 - En `?mode=wide` el anillo y los tres rombos quedan a pocos píxeles. Se distinguen gracias a las líneas guía, pero es una zona densa porque los datos son así de cercanos.
 - A 375 px el texto SVG queda en ~7.4–8.7 px, igual que en el resto de gráficas.
 - En el plot la etiqueta dice "Precomputed run"; el texto completo "(BasicSimulator)" está en el tooltip, la nota y la leyenda.
-- **Resultado en Qollab:** _pendiente._
+- **Resuelto (11 oct):** Jhoan cambió la frase a "roughly one election in **37 to 40**" (el 30 venía de un redondeo suyo). Se actualizó en `PROJECT_PAGE.md`, `README.md`, `ui/act3.js`, `index.html`, `HANDOFF_CLAUDE_CODE.md` y en el test que vigila la frase vieja.
+
+## Prueba en Qollab (v0.3), 11 oct 2026
+
+### Built-in simulator — ✅
+- Badge `live · list mode`. Debug: CHSH 0.85775 ± 0.0055, W 1.0, split-brain 0, GHZ 1.0, Bob 0.502/0.505/0.512, `inferred_visibility` 1/1/1.
+- Acto 3 (captura): las curvas y las líneas "envelopes" / "quantum stops helping" se ven bien. "This run" queda en V = 1 y F0–F2 se distinguen con sus etiquetas. El marcador está en V = 1.00 y la lectura es la de V = 1. El cuerpo de texto ya sale en fuente proporcional, así que el arreglo de `--sans` funciona en la máquina de Jhoan.
+
+### IonQ Forte 1 (remote simulator, noise model) — ✅
+- Badge `live · wide mode`. Debug: CHSH 0.85075 ± 0.0056, W 0.976, split-brain **0.017**, GHZ 0.959, Bob 0.512/0.502/0.519. `inferred_visibility`: chsh 0.992, w 0.962, ghz 0.945.
+- Acto 3 (captura): "This run" se separa hacia la izquierda en la gráfica de líder (V_w 0.962), etiquetado y sin tapar los rombos.
+- Es una **cuarta corrida** con split-brain 1.7 % (≈ 1 de cada 59). No contradice el texto, que habla de "three runs" (F0–F2), pero confirma que la dispersión entre corridas es real. Se puede mencionar en el video.
+- Confirmado por Jhoan: todas las corridas de Forte fueron en la fila "Remote simulator" (gratis, modelo de ruido), no en la QPU.
+
+### Observaciones visuales (no bloquean)
+- Con el slider por defecto en V = 1.00, el marcador vertical grueso y su etiqueta "V = 1.00" caen justo sobre el grupo de puntos (This run, F0–F2) en la esquina superior derecha, lo que lo hace denso. Mover el slider lo despeja.
 
 ## Archivos a subir a Qollab (v0.3)
 Relativo a lo que hay en Qollab (v0.2):

@@ -3,7 +3,7 @@
 **Estado:** ✅ cerrada (10 oct 2026).
 
 ## Qué se hizo
-- Motor cuántico (`quantum/`) terminado: 20/20 tests con Aer (`python -m pytest tests -q`).
+- Motor cuántico (`quantum/`) terminado: 18/18 tests con Aer (los 2 tests de detección de modo de v0.3 se escribieron fuera del repo y nunca entraron; los docs viejos decían 20) (`python -m pytest tests -q`).
 - Contrato JS ↔ Python con **modo automático** (`runner.run_mode(backend)`):
   - `wide` en IonQ: los 9 experimentos en **un circuito de 20 qubits** (IonQ rechaza jobs multi-circuito con `Only job type ionq.circuit.v1 is supported`).
   - `list` en simuladores locales: 9 circuitos pequeños en una sola llamada `backend.run` (el circuito ancho congela el navegador, WASM de un hilo).

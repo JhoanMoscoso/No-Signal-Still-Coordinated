@@ -55,7 +55,7 @@ What to try:
 | IonQ Forte 1 noise model, run F1 | 0.846 | 0.960 | 0.027 | 0.013 | 0.977 |
 | IonQ Forte 1 noise model, run F2 | 0.8365 | 0.970 | 0.025 | 0.005 | 0.970 |
 
-The first-paint values shipped with the page come from BasicSimulator and differ slightly from the built-in row. The Forte rows are **our own runs on the Forte 1 noise model, made on Oct 10 2026. They are not IonQ-published data.** In these runs roughly one election in 30 to 40 produced two or more leaders (split-brain).
+The first-paint values shipped with the page come from BasicSimulator and differ slightly from the built-in row. The Forte rows are **our own runs on the Forte 1 noise model, made on Oct 10 2026. They are not IonQ-published data.** In these runs roughly one election in 37 to 40 produced two or more leaders (split-brain).
 
 Classical limit 0.75; Tsirelson bound 0.8536 (the maximum quantum value, cos²(π/8)); Bob's marginal P(1) was 0.46 to 0.53 in every Act 1 case.
 

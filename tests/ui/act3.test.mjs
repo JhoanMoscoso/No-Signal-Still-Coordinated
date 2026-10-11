@@ -65,8 +65,8 @@ test('act3 text: Jhoan-approved sentence, hardware list with exactly 3 items, le
   const root = stubRoot(); render(root, data, { source: 'p' });
   const h = root.html;
   assert.ok(h.includes('Real hardware is noisy. With visibility V, P_win = ½ + V·√2/4'));
-  assert.ok(h.includes("Across three runs on IonQ's Forte 1 noise model we measured 96.0–97.0 % — roughly one election in 30 to 40 produces two leaders."));
-  assert.ok(!h.includes('96.8') && !h.includes('one election in 37'));
+  assert.ok(h.includes("Across three runs on IonQ's Forte 1 noise model we measured 96.0–97.0 % — roughly one election in 37 to 40 produces two leaders."));
+  assert.ok(!h.includes('96.8') && !h.includes('one election in 37 produces'));
   assert.ok(h.includes('None of this exists at scale today.'));
   const list = h.match(/What hardware would need<\/h3>\s*<ul[^>]*>([\s\S]*?)<\/ul>/)[1];
   assert.equal((list.match(/<li>/g) || []).length, 3);

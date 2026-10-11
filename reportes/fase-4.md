@@ -34,9 +34,9 @@
 ## Riesgos / pendientes para el equipo
 1. **Escribir la declaración de IA y de material previo.** Es obligatoria: sin ella el envío queda descalificado.
 2. **Completar los huecos** `[LINK: Qollab project]`, `[LINK: video]`, `[LINK: GitHub repo]` y `[TEAM]`.
-3. **Decisión de Jhoan:** "roughly one election in 30 to 40". Los datos dan 37 a 40, y la frase aparece también en la UI (`ui/act3.js`, `index.html`) y en el HANDOFF.
-4. **Confirmar que Forte 1 fue el simulador con modelo de ruido y no la QPU.** La página así lo afirma.
-5. **Discrepancia en los tests de Python:** el revisor obtuvo `pytest tests -q` → **18 passed**, pero el PLAN y el HANDOFF dicen 20/20 (`tests/test_quantum.py` tiene 16 funciones `test_`, algunas parametrizadas). Volver a correrlo en un entorno con Qiskit y corregir los docs. La página no cita la cifra.
+3. ✅ Resuelto: "roughly one election in 37 to 40" en página, README, UI y HANDOFF.
+4. ✅ Confirmado por Jhoan: Forte 1 = remote simulator con modelo de ruido (fila "Remote simulator", consola "Circuit execution time"). La página es correcta.
+5. ✅ Resuelto: son 18/18. Los 2 tests extra de detección de modo (v0.3) nunca entraron al repo. Se corrigieron el PLAN, el HANDOFF y `reportes/fase-0.md`. No se toca `tests/`.
 6. Si se publica el repo en GitHub, el README ya está listo; falta hacerlo público y poner el enlace.
 
 ## Archivos a subir a Qollab

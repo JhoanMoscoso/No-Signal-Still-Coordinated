@@ -2,7 +2,7 @@
 
 **Hackathon:** Qollab × IonQ · Tema **Quantum Unlocked** (quantum networking)
 **Deadline duro:** domingo 11 oct 2026, 19:00 ET / 18:00 Colombia. Envía el capitán (Jhoan).
-**Estado (10 oct 2026):** Fase 0 cerrada. Motor cuántico listo (20/20 tests), modo automático validado en Qollab built-in (list), IBM Fez con ruido (list) e IonQ Forte 1 remoto (wide). Publicado en Qollab como **v0.1** (MIT); la próxima subida es **v0.2**. Fase 1 (UI estática) validada en Qollab built-in y Forte 1. Fase 2 (interactividad) validada en Qollab (v0.2). Fase 3 (Acto 3: slider de visibilidad + 3 corridas Forte fijas) implementada y revisada; pendiente prueba en Qollab (v0.3). Reportes por fase para quien continúe: `reportes/`.
+**Estado (10 oct 2026):** Fase 0 cerrada. Motor cuántico listo (18/18 tests), modo automático validado en Qollab built-in (list), IBM Fez con ruido (list) e IonQ Forte 1 remoto (wide). Publicado en Qollab como **v0.1** (MIT); la próxima subida es **v0.2**. Fase 1 (UI estática) validada en Qollab built-in y Forte 1. Fase 2 (interactividad) validada en Qollab (v0.2). Fase 3 (Acto 3) validada en Qollab (v0.3: built-in + Forte 1). Fase 4: `PROJECT_PAGE.md` = `README.md` listos; falta declaración de IA del equipo. Reportes por fase para quien continúe: `reportes/`.
 **Corre en paralelo con *Entangled*.** Presupuesto realista para este proyecto: **~11 h de Jhoan + ~2 h de revisión de física + ~1,5 h de video**. Si no hay ese tiempo, ver §6 (plan de corte).
 
 ---
@@ -39,7 +39,7 @@ quantum/
 data/
   precomputed.json    resultado real de BasicSimulator (fallback)
   precomputed.js      mismo contenido como módulo ES (import sin fetch)
-tests/test_quantum.py 20 tests con Aer (fallback BasicSimulator, lento a 20 qubits)
+tests/test_quantum.py 18 tests con Aer (fallback BasicSimulator, lento a 20 qubits)
 tests/ui/*.test.mjs   tests de UI con node --test (sin DOM real)
 ui/
   sample.js           sample(raw), bit(key, qubit) — rondas sin más jobs (Fase 2)
@@ -88,7 +88,7 @@ inferred_visibility.{chsh,w,ghz,mermin}
 
 - **Qollab built-in 24q (v0.1, modo lista):** CHSH 0,858 · W 1,0 · GHZ 1,0 · Mermin 1,0 · Bob 0,51/0,51/0,47. Instantáneo.
 - **IonQ Forte 1 remoto (v0.2, modo wide, 1000 shots, 4 s):** CHSH 0,854 ± 0,006 · **W exactamente-uno 0,968, split-brain 0,027** · GHZ 0,984 · Bob 0,53/0,50/0,52 · visibilidad inferida W 0,95, GHZ 0,98. *Con el modelo de ruido real de IonQ, 1 de cada 37 elecciones de líder produce dos líderes.* → frase para el Acto 3.
-- **Local (Aer):** 20/20 tests, incluido que ningún gate cruza bloques y que `run_mode` detecta IonQ.
+- **Local (Aer):** 18/18 tests en el repo, incluido que ningún gate cruza bloques. (Los 2 tests de detección de modo de v0.3 se escribieron fuera del repo y nunca entraron; por eso algunos documentos viejos decían 20.)
 - **Built-in con circuito ancho (v0.2):** congeló el navegador → motivo del modo automático.
 
 ### Cómo la UI "juega rondas" sin más jobs
@@ -124,7 +124,7 @@ inferred_visibility.{chsh,w,ghz,mermin}
 - Acto 2c: botón "Play 100 rounds" (muestreo de `raw`), contador vivo; tabla de las 16 estrategias de sobres con su 75 % máximo, resaltando que ninguna llega a 4/4.
 - Acto 2a: botón "Elect again" que muestrea W y enciende un nodo.
 
-### Fase 3 — Acto 3 (2 h) — ✅ implementada, ☐ prueba en Qollab. Reporte: `reportes/fase-3.md` (ajuste de Jhoan: además de "This run", 3 puntos fijos con nuestras corridas de Forte 1 para que el reality check se vea en el built-in)
+### Fase 3 — Acto 3 (2 h) — ✅ validada en Qollab (built-in + Forte 1). Reporte: `reportes/fase-3.md` (ajuste de Jhoan: además de "This run", 3 puntos fijos con nuestras corridas de Forte 1 para que el reality check se vea en el built-in)
 - Slider V ∈ [0,1] (`<input type="range">` con etiqueta). Dibuja `noise.chsh_win` y `noise.w_exactly_one` + `w_split_brain`; línea en 0,75 y en V = 0,707.
 - Punto "measured on this backend" en V = `inferred_visibility.chsh` y `.w`. Si el run fue en Built-in, el punto cae en V = 1 y se dice.
 - Texto de requisitos: memoria cuántica ≥ ventana de latencia (decenas de ms), tasa de distribución de entrelazamiento ≥ tasa de decisiones, y que la elección de líder con W necesita que los nodos *preparen* el estado entre sí (Tani et al.) para que no sea "sobres con repartidor".

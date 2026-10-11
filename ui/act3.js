@@ -9,7 +9,7 @@ export const timers = { set: (fn, ms) => setTimeout(fn, ms), clear: (h) => clear
 const TEXT = 'Real hardware is noisy. With visibility V, P_win = ½ + V·√2/4: the quantum strategy stops beating 75 % ' +
   'at V = 1/√2 ≈ 0.707. For leader election P(exactly one leader) = V + 3(1−V)/8; the failures are split-brain ' +
   '(two leaders) and no leader. Across three runs on IonQ\'s Forte 1 noise model we measured 96.0–97.0 % — roughly ' +
-  'one election in 30 to 40 produces two leaders. Engineering requirements: entanglement must survive in memory for ' +
+  'one election in 37 to 40 produces two leaders. Engineering requirements: entanglement must survive in memory for ' +
   'at least the decision window (tens of ms), and entanglement distribution rate must match decision rate. ' +
   'None of this exists at scale today.';
 const NEEDS = [

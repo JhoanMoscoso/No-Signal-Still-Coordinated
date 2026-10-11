@@ -2,7 +2,7 @@
 
 **Hackathon:** Qollab × IonQ · Tema **Quantum Unlocked** (quantum networking)
 **Deadline duro:** domingo 11 oct 2026, 19:00 ET / 18:00 Colombia. Envía el capitán (Jhoan).
-**Estado (10 oct 2026):** Fase 0 cerrada. Motor cuántico listo (20/20 tests), modo automático validado en Qollab built-in (list), IBM Fez con ruido (list) e IonQ Forte 1 remoto (wide). Publicado en Qollab como **v0.1** (MIT); la próxima subida es **v0.2**. En curso: Fase 1 (UI). Reportes por fase para quien continúe: `reportes/`.
+**Estado (10 oct 2026):** Fase 0 cerrada. Motor cuántico listo (20/20 tests), modo automático validado en Qollab built-in (list), IBM Fez con ruido (list) e IonQ Forte 1 remoto (wide). Publicado en Qollab como **v0.1** (MIT); la próxima subida es **v0.2**. Fase 1 (UI: layout, Acto 1, Acto 2 estático) implementada y revisada; pendiente prueba en Qollab como v0.2. Reportes por fase para quien continúe: `reportes/`.
 **Corre en paralelo con *Entangled*.** Presupuesto realista para este proyecto: **~11 h de Jhoan + ~2 h de revisión de física + ~1,5 h de video**. Si no hay ese tiempo, ver §6 (plan de corte).
 
 ---
@@ -39,7 +39,14 @@ quantum/
 data/
   precomputed.json    resultado real de BasicSimulator (fallback)
   precomputed.js      mismo contenido como módulo ES (import sin fetch)
-tests/test_quantum.py 18 tests con Aer (fallback BasicSimulator, lento a 20 qubits)
+tests/test_quantum.py 20 tests con Aer (fallback BasicSimulator, lento a 20 qubits)
+tests/ui/*.test.mjs   tests de UI con node --test (sin DOM real)
+ui/
+  sample.js           sample(raw), bit(key, qubit) — rondas sin más jobs (Fase 2)
+  charts.js           SVG puro como string: hbar, histogram2, nodes, pct
+  act1.js             Acto 1: botones de Alice, histograma de Bob, ρ_B
+  act2.js             Acto 2: paneles W → GHZ → CHSH
+dev/                  harness local, NO se sube: index.html + shim de quantum.runner (python3 -m http.server → /dev/)
 local_run.py          corre todo localmente y regenera data/
 ```
 
@@ -101,7 +108,7 @@ inferred_visibility.{chsh,w,ghz,mermin}
 
 **Fase 0 cerrada.** El contrato queda congelado: la UI solo lee `data`. Reporte: `reportes/fase-0.md`.
 
-### Fase 1 — Layout + Acto 1 + Acto 2 estático (3 h)
+### Fase 1 — Layout + Acto 1 + Acto 2 estático (3 h) — ✅ implementada, ☐ prueba en Qollab (v0.2). Reporte: `reportes/fase-1.md`
 - `ui/charts.js`: barra horizontal con marcas (75 %, 85,4 %), histograma 0/1, tres "nodos" con luz. SVG a mano, sin librerías.
 - Acto 1: selector de acción de Alice (3 botones, `aria-pressed`), histograma de Bob desde `nosignal[choice].bob`, cajita ρ_B.
 - Acto 2: tres paneles con sus barras desde `leader`, `consensus`, `chsh`. Texto corto de cada uno (ver §5).

@@ -1,0 +1,24 @@
+<!doctype html>
+<!-- Local harness only (NOT uploaded to Qollab). Serve from the repo root:
+       python3 -m http.server 8000   ->   http://localhost:8000/dev/
+     Add ?mode=wide to make the shim report IonQ-style wide mode. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NSSC dev harness</title>
+  <link rel="stylesheet" href="../main.css">
+  <script type="importmap">{ "imports": { "quantum.runner": "./shim/runner.js" } }</script>
+</head>
+<body>
+  <script type="module">
+    // Fake Qollab runtime: backend global + fragment injected before main.js runs.
+    window.backend = {
+      name: 'dev fake backend',
+      run: async () => ({ result: async () => ({ get_counts: () => ({}) }) }),
+    };
+    document.body.innerHTML = await (await fetch('../index.html')).text();
+    await import('../main.js');
+  </script>
+</body>
+</html>

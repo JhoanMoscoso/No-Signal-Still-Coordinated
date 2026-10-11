@@ -5,6 +5,8 @@
 
 import * as runner from 'quantum.runner';          // quantum/runner.py
 import precomputed from './data/precomputed.js';    // fallback + instant first paint
+import * as act1 from './ui/act1.js';
+import * as act2 from './ui/act2.js';
 
 const SHOTS = 1000;   // one shot of the wide circuit = one shot of EVERY experiment
 
@@ -55,7 +57,15 @@ export async function runMerminLocal() {
 
 function render(data, { live, mode = null }) {
   document.body.dataset.source = live ? 'live' : 'precomputed';
-  // TODO Phase 1: replace with ui/act1.js, ui/act2.js, ui/act3.js
+  document.getElementById('source-badge').textContent =
+    live ? `live · ${mode} mode` : 'precomputed results';
+  act1.render(document.getElementById('act1-root'), data);
+  act2.render({
+    leader: document.getElementById('act2-leader'),
+    consensus: document.getElementById('act2-consensus'),
+    chsh: document.getElementById('act2-chsh'),
+  }, data);
+  // TODO Phase 3: act3.render(document.getElementById('act3-root'), data);
   document.getElementById('debug').textContent = JSON.stringify({
     source: live ? `live (${mode})` : 'precomputed',
     bob_p1: ['none', 'Z', 'X'].map((c) => data.nosignal[c].bob.p1),

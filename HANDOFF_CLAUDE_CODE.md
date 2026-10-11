@@ -25,7 +25,7 @@ Lee esto completo antes de tocar nada. **Empieza por `reportes/`**: hay un repor
 | `index.html` con contenedores de 3 actos, `main.css` placeholder | ✅ (feo a propósito) |
 | `data/precomputed.{json,js}` | ✅ regenerable con `python local_run.py` |
 | Fase 0 pasos 4–7 (built-in list, IBM Fez list < 1 min, Forte wide, publicado MIT) | ✅ publicado en Qollab como **v0.1**; siguiente subida **v0.2** |
-| Fase 1 | ⏳ en curso (ver `reportes/`) |
+| Fase 1 | ✅ implementada y revisada (24/24 tests UI); ☐ prueba en Qollab v0.2 — ver `reportes/fase-1.md` |
 | Fases 2–5 | ☐ |
 
 ## 2. Restricciones de Qollab (no negociables)
@@ -166,6 +166,8 @@ P2 → Fase 3 slider (dejar párrafo con las fórmulas) → Acto 2b GHZ (dejar u
 pip install qiskit qiskit-aer pytest     # Aer: BasicSimulator tarda 1 min a 20 qubits
 python -m pytest tests -q                # 20 tests
 python local_run.py 1000                 # regenera data/precomputed.{json,js}
+node --test tests/ui/*.test.mjs          # tests de UI (Node 22: pasar los archivos, no la carpeta)
+python3 -m http.server 8000              # luego abrir http://localhost:8000/dev/ (harness local)
 ```
 
 ## 9. Cómo entregar a Jhoan

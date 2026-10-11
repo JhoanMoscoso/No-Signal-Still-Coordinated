@@ -104,21 +104,23 @@ Módulos nuevos en `ui/`:
   - **W y GHZ** en estado inicial (contadores en 0, leyenda "leader share") se ven bien.
 - Nota: `inferred_visibility.chsh = 1` porque el CHSH medido (0.858) supera el teórico 0.854 por ruido estadístico y el valor se recorta a 1.
 
-### IonQ Forte 1 — ⚠️ funciona, con una incoherencia por aclarar
+### IonQ Forte 1 — ✅
 - Badge `live · wide mode`. Consola de Qollab: `Circuit execution time: 5000ms`, `Done.`
-- Panel W (captura) con datos **live** de hardware ruidoso:
-  - 97.0 % exactamente un líder, split-brain 2.5 %, no-leader 0.5 %.
-  - Leader share 34.7 / 33.5 / 35.1 %.
-  - "Elect 100 times" ×2: 188 de 200 elecciones con exactamente un líder (94 %). Tally A 55 · B 82 · C 81. Desbalance algo grande (χ² ≈ 6.4, df 2, p ≈ 0.04); plausible por azar, pero conviene un test de frecuencias por nodo con semilla.
-- **Incoherencia:** el debug JSON pegado dice `"source": "precomputed"`, con valores de precomputed (`leader_exactly_one: 1`, `inferred_visibility` con clave `mermin`), mientras el badge dice live y el panel W muestra datos live. `render()` en `main.js` actualiza el badge, luego `act1`, luego `act2` (leader → consensus → chsh), y **por último** el debug. Hay dos hipótesis:
-  1. El JSON se copió antes de que llegara el resultado live (el job tarda ~5 s).
-  2. **Bug:** algo en `act2.render` (panel consensus o chsh) lanza una excepción con datos live ruidosos del modo wide. El `catch` de `main.js` la atrapa: el W ya se pintó, pero el debug no se actualiza, y la línea de status diría `Run failed (…)`.
-  - Para distinguirlas hace falta, de Forte: el texto exacto de la línea de status bajo el título y la consola de DevTools del navegador (F12). La consola de Qollab no muestra `console.error`. También capturas de los paneles GHZ y CHSH tras el run.
+- Debug JSON (copiado después de que llegó el resultado live):
+  ```json
+  { "source": "live (wide)", "bob_p1": [0.507, 0.488, 0.477], "chsh": 0.8365, "chsh_sigma": 0.0058,
+    "leader_exactly_one": 0.97, "split_brain": 0.025, "ghz_agreement": 0.97, "mermin_precomputed": 1,
+    "inferred_visibility": { "chsh": 0.952, "w": 0.952, "ghz": 0.96 } }
+  ```
+- Panel W (captura): 97.0 % exactamente un líder, split-brain 2.5 %, no-leader 0.5 %, leader share 34.7 / 33.5 / 35.1 %. "Elect 100 times" ×2 dio 188 de 200 elecciones con exactamente un líder.
+  - El tally fue A 55 · B 82 · C 81 (χ² ≈ 6.4, p ≈ 0.04): fue **azar**. El test `electRound: fairness over 10 000 sampled elections` (con semilla) ya verifica que las frecuencias por nodo coinciden con `per_node_leader` ± 0.02.
+- Una primera copia del debug decía `"source": "precomputed"`: Jhoan la copió antes de que llegara el job (~5 s). No era un bug.
+- Comparado con Fase 1 en Forte: CHSH 0.837 (antes 0.846), W 0.97 / split-brain 0.025 (antes 0.96 / 0.027), GHZ 0.97 (antes 0.977). Es consistente; la variación entre corridas es la del modelo de ruido.
 - **Hallazgo lateral:** el `data/precomputed.js` que está en Qollab **no es el del repo**. Qollab tiene CHSH 0.849 y `mermin` dentro de `inferred_visibility`; el repo tiene CHSH 0.844 y no tiene esa clave. Los dos son válidos (BasicSimulator), pero conviene subir el del repo para que coincidan.
 
 ### Defecto encontrado: el cuerpo de texto sale monoespaciado en la máquina de Jhoan
 - Causa verificada: `--sans` empieza por `system-ui`, y en el escritorio Xfce de Jhoan la fuente de interfaz es **Fira Code** (`xfconf-query -c xsettings -p /Gtk/FontName` → `Fira Code Medium 10`). En otras máquinas sale proporcional, pero un juez con Linux personalizado vería lo mismo.
-- Arreglo: quitar `system-ui` y `-apple-system` de `--sans` y del `font` de `.nssc`, y usar una pila explícita: `"Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "DejaVu Sans", Arial, sans-serif`.
+- ✅ Arreglado en `main.css`: `--sans` ya no usa `system-ui` ni `-apple-system` (pila explícita `"Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "DejaVu Sans", Arial, sans-serif`), y `.nssc` usa `font: 16px/1.55 var(--sans)`. Tests 89/89.
 
 ### No reportado aún
 - La carrera CHSH (Play 100/1000, cambio de estrategia) en Qollab.
@@ -126,23 +128,7 @@ Módulos nuevos en `ui/`:
 - La prueba de estrés (Play 1000 antes de que llegue lo live en Forte).
 
 ### Acciones antes de la Fase 3
-1. Corregir `--sans` (`main.css`).
-2. Aclarar la incoherencia de Forte: si es un bug, reproducirlo localmente con datos ruidosos de forma wide y blindar `render()` para que un fallo en un panel no impida pintar los demás ni el debug (try/catch por panel con mensaje visible).
-3. Añadir un test de frecuencias por nodo de `electRound` con semilla.
-4. Subir `data/precomputed.js` del repo a Qollab.
-
-## Archivos a subir a Qollab (v0.2 = Fases 1 + 2)
-Relativo a la versión publicada v0.1:
-
-| Archivo | Carpeta destino | Cambio |
-|---|---|---|
-| `index.html` | raíz | modificado (Fase 1) |
-| `main.js` | raíz | modificado |
-| `main.css` | raíz | modificado |
-| `ui/act1.js`, `ui/act2.js`, `ui/charts.js`, `ui/sample.js` | `ui/` | nuevos (Fase 1, cambiados en Fase 2) |
-| `ui/games.js`, `ui/anim.js`, `ui/dom.js`, `ui/leader.js`, `ui/consensus.js`, `ui/chsh.js`, `ui/sendbit.js` | `ui/` | nuevos (Fase 2) |
-
-**No subir:** `dev/`, `tests/`, `reportes/`, `*.md`, `.gitignore`. `quantum/` y `data/` no cambian.
-
-## Siguiente fase
-Fase 3 — Acto 3: slider de visibilidad V, curvas `noise.*` y el punto "measured on this backend" en `inferred_visibility`.
+1. ✅ `--sans` corregido (`main.css`).
+2. ✅ Incoherencia de Forte aclarada: el JSON se copió antes de tiempo, no era un bug.
+3. ✅ El test de frecuencias por nodo ya existía y pasa.
+4. ☐ Subir a Qollab `main.css` (arreglo de fuente) y `data/precomputed.js` del repo, en la subida de la Fase 3.
